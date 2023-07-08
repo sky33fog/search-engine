@@ -1,0 +1,41 @@
+# example values
+
+indexing-settings:
+  sites:
+    - url:  https://wolume.ru
+      name: Wolume
+    - url: https://alti-meter.ru/
+      name: Alti-meter
+    - url:  https://playback.ru
+      name: Playback
+    - url: https://skillbox.ru
+      name: Skillbox
+    - url: https://www.krtz.su
+      name: Радиосвязь
+    - url: https://agat.lada.ru/
+      name: Агат Ладаcd
+
+connection-settings:
+  userAgent: LynxSearchBot
+  referer: https://www.google.com
+
+server:
+  port: 8080
+spring:
+  datasource:
+    username: root
+    password: testtest
+    url: jdbc:mysql://localhost/search_engine?useSSL=false&allowMultiQueries=true&serverTimezone=UTC
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        jdbc:
+          batch_size: 200
+        order_updates: true
+        order_inserts: true
+        batch_versioned_data: true
+        generate_statistics: false
+    hibernate:
+        ddl-auto: update
+    show-sql: false
