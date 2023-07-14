@@ -30,7 +30,7 @@ import java.util.concurrent.ForkJoinPool;
 public class IndexingService {
 
     private static final Logger logger = LogManager.getLogger();
-    private static final Map<SiteEntity, ForkJoinPool> forkJoinPools = new HashMap<>();
+    static final Map<SiteEntity, ForkJoinPool> forkJoinPools = new HashMap<>();
     @Autowired
     private SiteEntityRepository siteEntityRepository;
     @Autowired
@@ -189,16 +189,17 @@ public class IndexingService {
             pageEntityRepository.save(mainPage);
             List<String> paths = getPathsFromPage(doc, siteEntity.getUrl());
             forkJoinPools.put(siteEntity, new ForkJoinPool());
-            IndexingServiceHandler indexingServiceHandler = new IndexingServiceHandler(paths,
-                    siteEntity,
-                    pageEntityRepository,
-                    siteEntityRepository,
-                    lemmaEntityRepository,
-                    indexEntityRepository,
-                    morphologyHandler,
-                    lemmasHandler,
-                    connectionSettings,
-                    forkJoinPools.get(siteEntity));
+            IndexingServiceHandler indexingServiceHandler = new IndexingServiceHandler();
+            indexingServiceHandler.setPathsForIndexing(paths);
+            indexingServiceHandler.setSiteParent(siteEntity);
+            indexingServiceHandler.setPageEntityRepository(pageEntityRepository);
+            indexingServiceHandler.setSiteEntityRepository(siteEntityRepository);
+            indexingServiceHandler.setLemmaEntityRepository(lemmaEntityRepository);
+            indexingServiceHandler.setIndexEntityRepository(indexEntityRepository);
+            indexingServiceHandler.setMorphologyHandler(morphologyHandler);
+            indexingServiceHandler.setLemmasHandler(lemmasHandler);
+            indexingServiceHandler.setConnectionSettings(connectionSettings);
+            indexingServiceHandler.setForkJoinPool(forkJoinPools.get(siteEntity));
             forkJoinPools.get(siteEntity).invoke(indexingServiceHandler);
             waitingTaskExecuting(siteEntity, indexingServiceHandler);
             lemmasHandler.addLemmas(mainPage);

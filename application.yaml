@@ -6,14 +6,14 @@ indexing-settings:
       name: Wolume
     - url: https://alti-meter.ru/
       name: Alti-meter
-    - url:  https://playback.ru
-      name: Playback
-    - url: https://skillbox.ru
-      name: Skillbox
+#    - url:  https://playback.ru
+#      name: Playback
+#    - url: https://skillbox.ru
+#      name: Skillbox
     - url: https://www.krtz.su
       name: Радиосвязь
-    - url: https://agat.lada.ru/
-      name: Агат Ладаcd
+#    - url: https://agat.lada.ru/
+#      name: Агат Лада
 
 connection-settings:
   userAgent: LynxSearchBot

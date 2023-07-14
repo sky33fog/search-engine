@@ -34,7 +34,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         TotalStatistics total = new TotalStatistics();
         total.setSites(sites.getSites().size());
-        total.setIndexing(false);
+        total.setIndexing(IndexingService.forkJoinPools.values().stream().anyMatch(fjp -> fjp.getPoolSize() != 0));
         List<DetailedStatisticsItem> detailed = new ArrayList<>();
         List<Site> confFileSites = sites.getSites();
         for (Site site : confFileSites) {

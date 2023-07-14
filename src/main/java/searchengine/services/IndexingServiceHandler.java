@@ -1,5 +1,6 @@
 package searchengine.services;
 
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Connection;
@@ -20,44 +21,23 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
+@Setter
 public class IndexingServiceHandler extends RecursiveAction {
 
     private static final Logger logger = LogManager.getLogger();
     public static boolean isInterrupt;
     public static Map<SiteEntity, Long> timeLastConnect = new HashMap<>();
-    private final ConnectionSettings connectionSettings;
+    private ConnectionSettings connectionSettings;
     private final List<IndexingServiceHandler> pageTasks = new ArrayList<>();
-    private final PageEntityRepository pageEntityRepository;
-    private final SiteEntityRepository siteEntityRepository;
-    private final LemmaEntityRepository lemmaEntityRepository;
-    private final IndexEntityRepository indexEntityRepository;
-    private final MorphologyHandler morphologyHandler;
-    private final LemmasHandler lemmasHandler;
-    private final ForkJoinPool forkJoinPool;
-    private final List<String> pathsForIndexing;
-    private final SiteEntity siteParent;
-
-    public IndexingServiceHandler(List<String> pathsForIndexing,
-                                  SiteEntity siteParent,
-                                  PageEntityRepository pageRepository,
-                                  SiteEntityRepository siteRepository,
-                                  LemmaEntityRepository lemmaEntityRepository,
-                                  IndexEntityRepository indexEntityRepository,
-                                  MorphologyHandler morphologyHandler,
-                                  LemmasHandler lemmasHandler,
-                                  ConnectionSettings settings,
-                                  ForkJoinPool forkJoinPool) {
-        this.pathsForIndexing = pathsForIndexing;
-        this.siteParent = siteParent;
-        this.pageEntityRepository = pageRepository;
-        this.siteEntityRepository = siteRepository;
-        this.lemmaEntityRepository = lemmaEntityRepository;
-        this.indexEntityRepository = indexEntityRepository;
-        this.morphologyHandler = morphologyHandler;
-        this.lemmasHandler = lemmasHandler;
-        this.connectionSettings = settings;
-        this.forkJoinPool = forkJoinPool;
-    }
+    private List<String> pathsForIndexing;
+    private SiteEntity siteParent;
+    private PageEntityRepository pageEntityRepository;
+    private SiteEntityRepository siteEntityRepository;
+    private LemmaEntityRepository lemmaEntityRepository;
+    private IndexEntityRepository indexEntityRepository;
+    private MorphologyHandler morphologyHandler;
+    private LemmasHandler lemmasHandler;
+    private ForkJoinPool forkJoinPool;
 
     @Override
     protected void compute() {
@@ -120,17 +100,17 @@ public class IndexingServiceHandler extends RecursiveAction {
             pageEntityRepository.saveAndFlush(newPage);
         }
         List<String> pathsFromPage = IndexingService.getPathsFromPage(doc, site.getUrl());
-        IndexingServiceHandler task = new IndexingServiceHandler(
-                pathsFromPage,
-                site,
-                pageEntityRepository,
-                siteEntityRepository,
-                lemmaEntityRepository,
-                indexEntityRepository,
-                morphologyHandler,
-                lemmasHandler,
-                connectionSettings,
-                forkJoinPool);
+        IndexingServiceHandler task = new IndexingServiceHandler();
+        task.setPathsForIndexing(pathsFromPage);
+        task.setSiteParent(site);
+        task.setPageEntityRepository(pageEntityRepository);
+        task.setSiteEntityRepository(siteEntityRepository);
+        task.setLemmaEntityRepository(lemmaEntityRepository);
+        task.setIndexEntityRepository(indexEntityRepository);
+        task.setMorphologyHandler(morphologyHandler);
+        task.setLemmasHandler(lemmasHandler);
+        task.setConnectionSettings(connectionSettings);
+        task.setForkJoinPool(forkJoinPool);
         pageTasks.add(task);
         forkJoinPool.invoke(task);
         return newPage;
